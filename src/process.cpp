@@ -243,7 +243,18 @@ string process::pecfggen(XMLElement* PeXml, PEPROCESS* pe) {
     /****************************************生成pe是否需要写入值的配置*****************************************/
     XMLElement* reg_xml = PeXml->FirstChildElement("reg");
     string reg          = "3'b";
-    for (int i = 0; i < 3; ++i) {
+/*    for (int i = 0; i < 3; ++i) {
+        if (reg_xml->FindAttribute("value")->Value() == string("null")) {
+            reg += "0";
+        } else {
+            int value = std::stoi(reg_xml->FindAttribute("value")->Value());
+            _regValue[pe->_index].push_back(value);
+            reg += "1";
+        }
+        reg_xml = reg_xml->NextSiblingElement("reg");
+    }*/
+    while (reg_xml)
+    {
         if (reg_xml->FindAttribute("value")->Value() == string("null")) {
             reg += "0";
         } else {
@@ -253,6 +264,14 @@ string process::pecfggen(XMLElement* PeXml, PEPROCESS* pe) {
         }
         reg_xml = reg_xml->NextSiblingElement("reg");
     }
+    
+    if(reg.size()!=6){
+        if(reg=="3'b1")
+            reg="3'b010";
+        else if(reg=="3'b0")
+            reg="3'b000";
+    }
+
     //标识reg初始已经结束，直接输出PE0_Configure_Inport <= <=33'd0;
     _regValue[pe->_index].push_back(INT_MAX);
 
