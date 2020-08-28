@@ -123,7 +123,7 @@ void process::dataCout(){
     for (int i = 0; i < _peGroup.size(); ++i)
     {
         ofs << "            if(PE"<<_peGroup[i]._index<<"_Outport0[35:33]!=3'b000&&PE"<<_peGroup[i]._index<<"_Outport0[32]!=1'b1) begin" << endl;
-        ofs << "                $fwrite(filez,\"PE"<<_peGroup[i]._index<<".vbl = %b,value = %d";
+        ofs << "                $fwrite(filez,\"PE"<<_peGroup[i]._index<<".vbl=%b,value=%d";
         //判断inbuffer与outbuffer是不是全部bypass，53与54位是buffer_bypass的配置，如果全部bypass，则需要加注释
         if (_peGroup[i]._config[53]=='1'&&_peGroup[i]._config[54]=='1')
         {
@@ -388,11 +388,13 @@ void process::tempLsProcess(XMLElement* PeXml, PEPROCESS* pe) {
 
 string process::lscfggen(XMLElement* PeXml, PEPROCESS* pe) {
 
-    string inport0_valid = "1'b0";
+    string inport0_valid = "1'b1";
     string reser         = "1'b1,7'b000_0000";
 
     string alu = PEALUMAP["add"];
 
+    /****************************************生成pe是否需要写入值的配置*****************************************/
+    _regValue[pe->_index].push_back(0);
     _regValue[pe->_index].push_back(INT_MAX);
 
     /****************************************生成buf_mode****************************************/
@@ -424,7 +426,7 @@ string process::lscfggen(XMLElement* PeXml, PEPROCESS* pe) {
     /****************************************生成pe内部连线配置*****************************************/
     XMLElement* input_xml = PeXml->FirstChildElement("input");
 
-    for (int i = 0; (input_xml != nullptr && i < 3); ++i) {
+    for (int i = 1; (input_xml != nullptr && i < 3); ++i) {
         NodeType input_type = NodeTypeConverter::toEnum(input_xml->FindAttribute("type")->Value());
         if (input_type == NodeType::pe) {
             pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value());
@@ -445,7 +447,7 @@ string process::lscfggen(XMLElement* PeXml, PEPROCESS* pe) {
 
 
     /****************************************生成outmode*****************************************/
-    string outmode = "1'd1";
+    string outmode = "1'd0";
     //------------------------------------------------------------------------------------------//
 
     /****************************************生成control*****************************************/
@@ -457,7 +459,7 @@ string process::lscfggen(XMLElement* PeXml, PEPROCESS* pe) {
     //------------------------------------------------------------------------------------------//
 
     string comma = ",";
-    string pecfg = "{" + reser + comma + "3'b000" + comma + inport0_valid + comma + alu + comma +
+    string pecfg = "{" + reser + comma + "3'b100" + comma + inport0_valid + comma + alu + comma +
                    buf_mode + comma + buf_from + comma + buf_bypass + comma + outmode + comma +
                    loop_control + comma + branch_control + "}";
     return pecfg;
