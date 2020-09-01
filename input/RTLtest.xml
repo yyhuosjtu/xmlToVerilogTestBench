@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- odd even sort -->
-<!-- PE26 LC3 LS11 total = 39 -->
+<!-- nw 基因序列检测 动态规划 -->
+<!-- PE36 LS12 total = 50, edges=79 -->
 <Config manual_placement="true">
-	<node type="pe" index="1" opcode="hlt" loop_control="outermost_loop" branch_control="null">
+	<node type="pe" index="38" opcode="hlt" loop_control="outermost_loop" branch_control="null">
 		<inner_connection
 			buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="keep"
 			buffer0_from="null" buffer1_from="aluin1" buffer2_from="null"
@@ -10,180 +10,450 @@
 		<input type="null"/>
 		<input type="null"/>
 		<input type="null"/>
-		<reg value="0" />
-		<reg value="null" />
-		<reg value="5" />
-		<placement cord="[5, 5]"/>
-	</node>
-	<node type="pe" index="4" opcode="hlt" loop_control="inner_loop" branch_control="null">
-		<inner_connection
-			buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="keep"
-			buffer0_from="null" buffer1_from="aluin1" buffer2_from="null"
-			input_buffer_bypass="inbuffer" output_buffer_bypass="bypass"/>
-		<input type="null"/>
-		<input type="pe" index="1" port="0"/>
-		<input type="null"/>
-		<reg value="0" />
-		<reg value="null" />
 		<reg value="2" />
-		<placement cord="[5, 5]"/>
-	</node>
-	<node type="pe" index="39" opcode="logic_not" loop_control="null" branch_control="null">
-		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
-			buffer0_from="null" buffer1_from="aluin1" buffer2_from="in2"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="null"/>
-		<input type="null"/>
-		<input type="pe" index="1" port="0"/>
 		<reg value="null" />
+		<reg value="129" />
+		<placement cord="[5, 8]"/>
+	</node>
+
+	<node type="pe" index="0" opcode="lt" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="38" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="65" />
+		<placement cord="[3, 6]"/>
+	</node>
+	<node type="pe" index="1" opcode="sub" loop_control="null" >
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="38" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="64" />
+		<placement cord="[2, 7]"/>
+	</node>
+	<node type="pe" index="2" opcode="mux" loop_control="null" >
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="38" port="0"/>
+		<input type="null"/>
+		<input type="pe" index="0" port="0"/>
+		<reg value="65" />
+		<placement cord="[4, 6]"/>
+	</node>
+	<node type="pe" index="30" opcode="logic_not" loop_control="null" >
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="null" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="null"/>
+		<input type="pe" index="0" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[2, 8]"/>
+	</node>
+	<node type="pe" index="3" opcode="mux" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="1" port="0"/>
+		<input type="null"/>
+		<input type="pe" index="30" port="0"/>
+		<reg value="1" />
+		<placement cord="[4, 5]"/>
+	</node>
+
+	<!-- ===================================================================手搭建循环头,方案一,采用4个pe搭建循环头 -->
+	<node type="pe" index="36" opcode="hlt" loop_control="inner_loop_ini" branch_control="null">
+		<inner_connection
+			buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="keep"
+			buffer0_from="null" buffer1_from="aluin1" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="bypass"/>
+		<input type="null"/>
+		<input type="pe" index="3" port="0"/>
+		<input type="pe" index="2" port="0"/>
 		<reg value="1" />
 		<reg value="null" />
-		<placement cord="[5, 4]"/>
+		<reg value="null" />
+		<placement cord="[5, 8]"/>
 	</node>
-	<node type="pe" index="5" opcode="nop" loop_control="trans" branch_control="null">
+
+	<!-- 暂时还没有考虑清楚alu的顺序问题 -->
+	<node type="pe" index="32" opcode="sub" loop_control="null">
 		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="lr" buffer2_mode="buffer"
-			buffer0_from="null" buffer1_from="in1" buffer2_from="in2"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+			buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="null" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
 		<input type="null"/>
-		<input type="pe" index="39" port="0"/>
-		<input type="pe" index="4" port="0"/>
+		<input type="pe" index="36" port="0"/>
+		<input type="null"/>
+		<reg value="0" />
 		<reg value="null" />
 		<reg value="null" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
+		<placement cord="[7, 5]"/>
 	</node>
-	<node type="pe" index="7" opcode="hlt" loop_control="inner_loop_ini" branch_control="null">
+	<node type="pe" index="5" opcode="add" loop_control="null">
 		<inner_connection
-			buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="keep"
-			buffer0_from="null" buffer1_from="aluin1" buffer2_from="null"
-			input_buffer_bypass="inbuffer" output_buffer_bypass="bypass"/>
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="32" port="0"/>
+		<input type="pe" index="38" port="0"/>
 		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[7, 5]"/>
+	</node>
+	<node type="pe" index="28" opcode="add" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
 		<input type="pe" index="5" port="0"/>
 		<input type="null"/>
-		<reg value="2" />
-		<reg value="null" />
-		<reg value="32" />
-		<placement cord="[5, 5]"/>
+		<input type="null"/>
+		<reg value="144" />
+		<placement cord="[7, 8]"/>
 	</node>
-	<node type="pe" index="10" opcode="add" loop_control="null" branch_control="null" key_cal="true">
+
+	<node type="ls" index="10" ls_mode="dummy" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
+		<input type="pe" index="36" port="0"/>
+		<input type="null"/>
+		<placement cord="[0, 1]"/>
+	</node>
+
+	<node type="pe" index="6" opcode="sub" loop_control="null">
 		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
 			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="10" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="1" />
+		<placement cord="[1, 6]"/>
+	</node>
+	<node type="pe" index="7" opcode="mul" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="6" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="72" />
+		<placement cord="[4, 4]"/>
+	</node>
+	<node type="pe" index="8" opcode="mul" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="10" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="72" />
+		<placement cord="[3, 5]"/>
+	</node>
+	<node type="pe" index="9" opcode="sub" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="5" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="1" />
+		<placement cord="[6, 2]"/>
+	</node>
+	<node type="pe" index="29" opcode="add" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="9" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="144" />
+		<placement cord="[8, 7]"/>
+	</node>
+	<node type="pe" index="31" opcode="add" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="6" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="72" />
+		<placement cord="[3, 2]"/>
+	</node>
+	<node type="pe" index="10" opcode="add" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="29" port="0"/>
 		<input type="pe" index="7" port="0"/>
-		<input type="null" />
 		<input type="null"/>
 		<reg value="null" />
-		<reg value="64" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
+		<placement cord="[7, 2]"/>
 	</node>
-
-	<node type="pe" index="26" opcode="add" loop_control="null" branch_control="null" key_cal="true">
+	<node type="pe" index="37" opcode="add" loop_control="null">
 		<inner_connection
-            buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="buffer"
-			buffer0_from="null" buffer1_from="in1" buffer2_from="null"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="null"/>
-		<input type="pe" index="10" port="0"/>
-		<input type="null"/>
-		<reg value="32" />
-		<reg value="null" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
-	</node>
-
-	<node type="pe" index="27" opcode="add" loop_control="null" branch_control="null" key_cal="true">
-		<inner_connection
-            buffer0_mode="keep" buffer1_mode="buffer" buffer2_mode="buffer"
-			buffer0_from="null" buffer1_from="in1" buffer2_from="null"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="null"/>
-		<input type="pe" index="10" port="0"/>
-		<input type="null"/>
-		<reg value="33" />
-		<reg value="null" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
-	</node>
-	<node type="pe" index="40" opcode="lt" loop_control="null" branch_control="null">
-		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
 			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="pe" index="27" port="0"/>
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="10" port="0"/>
 		<input type="null"/>
 		<input type="null"/>
-		<reg value="null" />
-		<reg value="128" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
+		<reg value="0" />
+		<placement cord="[2, 5]"/>
 	</node>
-	<node type="pe" index="28" opcode="lt" loop_control="null" branch_control="cb" key_cal="true">
+	<node type="pe" index="11" opcode="add" loop_control="null">
 		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="10" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="1" />
+		<placement cord="[2, 5]"/>
+	</node>
+	<node type="pe" index="12" opcode="add" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="29" port="0"/>
+		<input type="pe" index="8" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[2, 2]"/>
+	</node>
+	<node type="pe" index="13" opcode="add" loop_control="null">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="28" port="0"/>
+		<input type="pe" index="8" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[2, 1]"/>
+	</node>
+
+	<node type="ls" index="9" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
+		<input type="pe" index="9" port="0"/>
+		<input type="null"/>
+		<placement cord="[9, 7]"/>
+	</node>
+	<node type="ls" index="0" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
+		<input type="pe" index="31" port="0"/>
+		<input type="null"/>
+		<placement cord="[9, 6]"/>
+	</node>
+	<node type="ls" index="2" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false" vecmode="vect" pss="0_2_2" >
+		<input type="pe" index="37" port="0"/>
+		<input type="null"/>
+		<placement cord="[9, 5]"/>
+	</node>
+	<node type="ls" index="3" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false" vecmode="vecr" pss="0_0_0">
+		<input type="pe" index="11" port="0"/>
+		<input type="null"/>
+		<placement cord="[9, 4]"/>
+	</node>
+	<node type="ls" index="4" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
+		<input type="pe" index="12" port="0"/>
+		<input type="null"/>
+		<placement cord="[9, 4]"/>
+	</node>
+
+	<node type="pe" index="14" opcode="eq" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="0" port="0"/>
+		<input type="ls" index="9" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[4, 2]"/>
+	</node>
+	<!-- 需要keepv alue -->
+	<node type="pe" index="21" opcode="mux" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="keep" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="null" buffer1_from="null" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<!-- <input type="pe" index="36" port="0"/> -->
+		<input type="null"/>
+		<input type="null"/>
+		<input type="pe" index="14" port="0"/>
+		<reg value="1" />
+		<reg value="-1" />
+		<reg value="null" />
+		<placement cord="[6, 5]"/>
+	</node>
+	<node type="pe" index="15" opcode="add" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="2" port="0"/>
+		<input type="pe" index="21" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[5, 2]"/>
+	</node>
+	<node type="pe" index="16" opcode="sub" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="3" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="1" />
+		<placement cord="[8, 3]"/>
+	</node>
+	<node type="pe" index="17" opcode="sub" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="4" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<!--<reg value="null" />-->
+		<reg value="1" />
+		<!--<reg value="null" />-->
+		<placement cord="[5, 6]"/>
+	</node>
+	<!-- 原本用于传字符 -->
+	<node type="ls" index="1" ls_mode="dummy" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
+		<input type="pe" index="13" port="0"/>
+		<input type="null"/>
+		<placement cord="[0, 1]"/>
+	</node>
+	<node type="pe" index="19" opcode="add" loop_control="null" key_cal="false">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="1" port="0"/>
+		<input type="null"/>
+		<input type="null"/>
+		<reg value="9288" />
+		<placement cord="[7, 3]"/>
+	</node>
+
+	<node type="pe" index="22" opcode="lt" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="17" port="0"/>
+		<input type="pe" index="16" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[7, 4]"/>
+	</node>
+	<!-- inbuffer1中需要一个初始值 -->
+	<node type="pe" index="23" opcode="mux" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="keep" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="null" buffer1_from="null" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="null"/>
+		<input type="null"/>
+		<input type="pe" index="22" port="0"/>
+		<reg value="94" />
+		<reg value="60" />
+		<reg value="null" />
+		<placement cord="[6, 4]"/>
+	</node>
+	<node type="pe" index="24" opcode="mux" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
 			buffer0_from="in0" buffer1_from="in1" buffer2_from="in2"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="ls" index="19" port="0"/>
-		<input type="ls" index="18" port="0"/>
-		<input type="pe" index="40" port="0"/>
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="16" port="0"/>
+		<input type="pe" index="17" port="0"/>
+		<input type="pe" index="22" port="0"/>
 		<reg value="null" />
-		<reg value="null" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
+		<placement cord="[8, 6]"/>
 	</node>
-
-	<node type="pe" index="29" opcode="nop" loop_control="null" branch_control="cb">
-		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
-			buffer0_from="null" buffer1_from="in1" buffer2_from="in2"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="null"/>
-		<input type="ls" index="38" port="0"/>
-		<input type="pe" index="28" port="0"/>
-		<reg value="null" />
-		<reg value="null" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
-	</node>
-
-	<node type="pe" index="30" opcode="nop" loop_control="null" branch_control="cb">
-		<inner_connection
-            buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
-			buffer0_from="null" buffer1_from="in1" buffer2_from="in2"
-            input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
-		<input type="null"/>
-		<input type="ls" index="39" port="0"/>
-		<input type="pe" index="28" port="0"/>
-		<reg value="null" />
-		<reg value="null" />
-		<reg value="null" />
-		<placement cord="[5, 4]"/>
-	</node>
-	<node type="ls" index="18" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
-		<input type="pe" index="26" port="0"/>
+	<node type="ls" index="11" ls_mode="dummy" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
+		<input type="pe" index="15" port="0"/>
 		<input type="null"/>
 		<placement cord="[0, 1]"/>
 	</node>
+	<node type="pe" index="26" opcode="lt" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="null"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="ls" index="11" port="0"/>
+		<input type="pe" index="24" port="0"/>
+		<input type="null"/>
+		<reg value="null" />
+		<placement cord="[7, 7]"/>
+	</node>
+	<node type="pe" index="27" opcode="mux" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="buffer" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="in1" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="24" port="0"/>
+		<input type="pe" index="15" port="0"/>
+		<input type="pe" index="26" port="0"/>
+		<reg value="null" />
+		<placement cord="[5, 7]"/>
+	</node>
+	<node type="pe" index="25" opcode="mux" loop_control="null" key_cal="true">
+		<inner_connection
+			buffer0_mode="buffer" buffer1_mode="keep" buffer2_mode="buffer"
+			buffer0_from="in0" buffer1_from="null" buffer2_from="in2"
+			input_buffer_bypass="inbuffer" output_buffer_bypass="outbuffer"/>
+		<input type="pe" index="23" port="0"/>
+		<input type="null"/>
+		<input type="pe" index="26" port="0"/>
+		<reg value="47" />
+		<placement cord="[7, 6]"/>
+	</node>
 
-	<node type="ls" index="19" ls_mode="load" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
+	<node type="ls" index="5" ls_mode="store_addr" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
+		<input type="pe" index="13" port="0"/>
+		<input type="null"/>
+		<placement cord="[0, 6]"/>
+	</node>
+	<node type="ls" index="6" ls_mode="store_data" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
 		<input type="pe" index="27" port="0"/>
 		<input type="null"/>
-		<placement cord="[0, 1]"/>
+		<placement cord="[0, 7]"/>
 	</node>
-	<node type="ls" index="38" ls_mode="dummy" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
-		<input type="ls" index="18" port="0"/>
+	<node type="ls" index="7" ls_mode="store_addr" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
+		<input type="pe" index="19" port="0"/>
 		<input type="null"/>
-		<placement cord="[0, 1]"/>
+		<placement cord="[0, 6]"/>
 	</node>
-	<node type="ls" index="39" ls_mode="dummy" tag_mode="true" dae="true" fifo_step="1" buffer_size="middle" match="false">
-		<input type="ls" index="19" port="0"/>
+	<node type="ls" index="8" ls_mode="store_data" tag_mode="true" dae="true" fifo_step="1" buffer_size="large" match="false">
+		<input type="pe" index="25" port="0"/>
 		<input type="null"/>
-		<placement cord="[0, 1]"/>
+		<placement cord="[0, 7]"/>
 	</node>
-	<node type="bus" index="0" level="0" end_table="pe.29.0_pe.30.0">
-		<placement cord="[2, 9]"/>
+
+	<node type="bus" index="0" level="0" end_table="ls.6.0_ls.8.0">
+		<placement cord="[0, 7]"/>
 	</node>
 </Config>

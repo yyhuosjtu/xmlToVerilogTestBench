@@ -355,7 +355,11 @@ string process::pecfggen(XMLElement* PeXml, PEPROCESS* pe) {
     //------------------------------------------------------------------------------------------//
 
     /****************************************生成branch_control***********************************/
-    string branch_control = BRANCHCONTROL[PeXml->FindAttribute("branch_control")->Value()];
+    string branch_control;
+    if (PeXml->FindAttribute("branch_control"))
+        branch_control = BRANCHCONTROL[PeXml->FindAttribute("branch_control")->Value()];
+    else
+        branch_control = "2'd0";
     //------------------------------------------------------------------------------------------//
 
     string comma = ",";
