@@ -334,6 +334,15 @@ string process::pecfggen(XMLElement* PeXml, PEPROCESS* pe) {
         input_xml = input_xml->NextSiblingElement("input");
     }
 
+    input_xml = PeXml->FirstChildElement("input");
+    if ((string(input_xml->FindAttribute("type")->Value()) != "null") && ((string(inner_connection_xml->FindAttribute("buffer0_from")->Value()) == "null")&& (string(inner_connection_xml->FindAttribute("buffer1_from")->Value()) != "in0in1")))
+        cout << pe->_index << " error" << endl;
+    input_xml = input_xml->NextSiblingElement("input");
+    if ((string(input_xml->FindAttribute("type")->Value()) != "null") && ((string(inner_connection_xml->FindAttribute("buffer1_from")->Value()) == "null")))
+        cout << pe->_index << " error" << endl;
+    input_xml = input_xml->NextSiblingElement("input");
+    if ((string(input_xml->FindAttribute("type")->Value()) != "null") && ((string(inner_connection_xml->FindAttribute("buffer2_from")->Value()) == "null")))
+        cout << pe->_index << " error" << endl;
     //------------------------------------------------------------------------------------------//
 
 
@@ -386,8 +395,9 @@ void process::peRegInitial() {
                 if (iter->second[i] == INT_MAX) {
                     ofs << "PE" << iter->first << "_Configure_Inport <=33'd0;" << endl;
                 } else {
-                    ofs << "PE" << iter->first << "_Configure_Inport <={1'b1,32'd"
-                        << iter->second[i] << "};" << endl;
+                    ofs << "PE" << iter->first << "_Configure_Inport <={1'b1,32'h";
+                    ofs << hex<<iter->second[i] << "};" << endl;
+                    ofs << dec;
                 };
                 Timing = true;
             }
