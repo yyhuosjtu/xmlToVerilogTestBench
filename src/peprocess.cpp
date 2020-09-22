@@ -30,6 +30,7 @@ void PEPROCESS::pePortCout(){
     ofs.close();
  
 }
+
 void PEPROCESS::peInstantiateCout(){
     ofstream ofs;
     ofs.open(OUTPUTADDR, ios::app);
@@ -43,11 +44,16 @@ void PEPROCESS::peInstantiateCout(){
         if (_outloop&&i==1)
         {
            ofs<<"    .PE_Inport1(PE"<<_index<<"_Inport1),"<<endl;
-        }else if (_inport[i]==-1)
+        }
+        else if (_inport[i]==-1)
         {
             ofs<<"    .PE_Inport"<<i<<"(36'b0),"<<endl;
-        }else{
+        }
+        else if(_intype[i]==0){
             ofs<<"    .PE_Inport"<<i<<"(PE"<<_inport[i]<<"_Outport0),"<<endl;
+        }
+        else if (_intype[i] == 1) {
+            ofs << "    .PE_Inport" << i << "(Fifo" << _inport[i] << "_data_r)," << endl;
         }
         
     }
@@ -55,11 +61,15 @@ void PEPROCESS::peInstantiateCout(){
 
     for (int i = 0; i < 8; ++i)
     {
-        if (_bpFrom[i].peIndex==-1)
+        if (_bpFrom[i].Index==-1)
         {
             ofs<<"    .Post_PE_Bp"<<i<<"(1'b1),"<<endl;
-        }else{
-            ofs<<"    .Post_PE_Bp"<<i<<"(Pre_PE"<<_bpFrom[i].peIndex<<"_Bp"<<_bpFrom[i].pePort<<"),"<<endl;
+        }
+        else if(_bpFrom[i].bptype==0){
+            ofs << "    .Post_PE_Bp" << i << "(Pre_PE" << _bpFrom[i].Index << "_Bp" << _bpFrom[i].pePort << ")," << endl;
+        }
+        else if (_bpFrom[i].bptype == 1) {
+            ofs << "    .Post_PE_Bp" << i << "(Fifo_" << _bpFrom[i].Index << "_bp)," << endl;
         }
         
     }

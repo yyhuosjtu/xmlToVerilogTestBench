@@ -13,10 +13,11 @@ std::unordered_map<std::string, std::string> PEALUMAP = {
     {"logic_and", "5'd16"},    {"logic_or", "5'd17"},
     {"logic_not", "5'd18"},    {"great_than", "5'd19"},
     {"great_than_equal", "5'd20"},{"not_equal", "5'd21"},
+    {"arith_right_shift", "5'd22"},
     /**
      * 为支持之前的配置字
      */
-    {"lt", "5'd5"},{"eq", "5'd7"},{"hlt", "5'd5"}, {"gte","5'd20"}
+    {"lt", "5'd5"},{"eq", "5'd7"},{"hlt", "5'd5"}, {"gte","5'd20"},{"hneq", "5'd21"}
 };
 std::unordered_map<std::string, std::string> PEBUF02CFGMAP = {
     {"buffer", "0"}, {"keep", "1"}, {"null", "0"}, {"in0", "1"}, {"in2", "1"}};

@@ -142,6 +142,7 @@
     <ClInclude Include="..\..\lib\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\..\src\enum_converter.h" />
     <ClInclude Include="..\..\src\enum_define.h" />
+    <ClInclude Include="..\..\src\fifoprocess.h" />
     <ClInclude Include="..\..\src\filedefine.h" />
     <ClInclude Include="..\..\src\map_define.h" />
     <ClInclude Include="..\..\src\peprocess.h" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lib\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="..\..\src\fifoprocess.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\peprocess.cpp" />
     <ClCompile Include="..\..\src\process.cpp" />

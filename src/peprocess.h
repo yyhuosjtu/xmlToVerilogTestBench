@@ -6,8 +6,9 @@
 using namespace std;
 
 struct PEBPPORT
-{
-    int peIndex;
+{   
+    int bptype;
+    int Index;
     int pePort;
 };
 
@@ -36,7 +37,8 @@ public:
     int _index;
     string _config;
     int _inport[3] = {-1,-1,-1};
-    PEBPPORT _bpFrom[8] = { {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0} };
+    int _intype[3] = { 0,0,0 };
+    PEBPPORT _bpFrom[8] = { {0,-1, 0}, {0,-1, 0}, {0,-1, 0}, {0,-1, 0}, {0,-1, 0}, {0,-1, 0}, {0,-1, 0}, {0,-1, 0} };
     int _fanOut;
     bool _outloop=false;
 };

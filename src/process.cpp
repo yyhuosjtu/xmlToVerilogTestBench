@@ -49,11 +49,23 @@ void process::dfgCout() {
     for (int i = 0; i < _peGroup.size(); ++i) {
         _peGroup[i].pePortCout();
     }
+    /*
+      fifo端口声明
+    */
+    for (int i = 0; i < _fifoGroup.size(); ++i) {
+        _fifoGroup[i].fifoPortCout();
+    }
     /**
      * pe例化
      */
     for (int i = 0; i < _peGroup.size(); ++i) {
         _peGroup[i].peInstantiateCout();
+    }
+    /*
+      fifo例化
+    */
+    for (int i = 0; i < _fifoGroup.size(); ++i) {
+        _fifoGroup[i].fifoInstantiateCout();
     }
 
     ofs.open(OUTPUTADDR, ios::app);
@@ -127,9 +139,9 @@ void process::dataCout(){
         //判断inbuffer与outbuffer是不是全部bypass，53与54位是buffer_bypass的配置，如果全部bypass，则需要加注释
         if (_peGroup[i]._config[53]=='1'&&_peGroup[i]._config[54]=='1')
         {
-            ofs << "@clk %d is_all_comb\\n\",PE"<<_peGroup[i]._index<<"_Outport0[35:33],PE"<<_peGroup[i]._index<<"_Outport0[31:0],i);" << endl;
+            ofs << "@clk %d is_all_comb\\n\",PE"<<_peGroup[i]._index<<"_Outport0[35:33],$signed(PE"<<_peGroup[i]._index<<"_Outport0[31:0]),i);" << endl;
         }else{
-            ofs << "@clk %d\\n\",PE"<<_peGroup[i]._index<<"_Outport0[35:33],PE"<<_peGroup[i]._index<<"_Outport0[31:0],i);" << endl;
+            ofs << "@clk %d\\n\",PE"<<_peGroup[i]._index<<"_Outport0[35:33],$signed(PE"<<_peGroup[i]._index<<"_Outport0[31:0]),i);" << endl;
         }
         ofs << "            end" << endl;        
     }
@@ -196,9 +208,9 @@ void process::Parsing() {
                 break;
             }
             case NodeType::fifo: {
-                PEPROCESS pe;
-                tempFifoProcess(NodeXml, &pe);
-                _peGroup.push_back(pe);
+                FIFOPROCESS fifo;
+                fifoparsing(NodeXml, &fifo);
+                _fifoGroup.push_back(fifo);
                 break;
             }
             default:
@@ -207,18 +219,27 @@ void process::Parsing() {
         NodeXml = NodeXml->NextSiblingElement("node");
     }
 
-    for (int i = 0; i < _peBPTtc_i.size(); ++i) {
-        _peBPItc[_peBPTtc_i[i].index].push_back({_peBPTtc_i[i].myindex, _peBPTtc_i[i].port});
+    for (int i = 0; i < _BPTtc_i.size(); ++i) {
+        if(_BPTtc_i[i].type==0)
+            _peBPItc[_BPTtc_i[i].index].push_back({_BPTtc_i[i].mytype, _BPTtc_i[i].myindex, _BPTtc_i[i].port});
+        else if(_BPTtc_i[i].type == 1)
+            _fifoBPItc[_BPTtc_i[i].index] = { _BPTtc_i[i].mytype, _BPTtc_i[i].myindex, _BPTtc_i[i].port };
     }
 
 
     for (int i = 0; i < _peGroup.size(); ++i) {
         int index = _peGroup[i]._index;
         for (int j = 0; j < _peBPItc[index].size(); ++j) {
+            int bptype             = _peBPItc[index][j].type;
             int bpindex            = _peBPItc[index][j].index;
             int bpport             = _peBPItc[index][j].port;
-            _peGroup[i]._bpFrom[j] = {bpindex, bpport};
+            _peGroup[i]._bpFrom[j] = {bptype, bpindex, bpport};
         }
+    }
+
+    for (int i = 0; i < _fifoGroup.size(); ++i) {
+        int index = _fifoGroup[i]._index;
+        _fifoGroup[i]._bpfrom = { _fifoBPItc[index].type, _fifoBPItc[index].index, _fifoBPItc[index].port };
     }
 }
 
@@ -319,17 +340,18 @@ string process::pecfggen(XMLElement* PeXml, PEPROCESS* pe) {
         NodeType input_type = NodeTypeConverter::toEnum(input_xml->FindAttribute("type")->Value());
         if (input_type == NodeType::pe) {
             pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value());
-            _peBPTtc_i.push_back({pe->_index, pe->_inport[i], i});
+            _BPTtc_i.push_back({pe->_index, 0, 0,pe->_inport[i], i});
         }
         // NOTE:默认将ls_index加100，防止发生与pe的冲突
         else if (input_type == NodeType::ls) {
             pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value()) + 100;
-            _peBPTtc_i.push_back({pe->_index, pe->_inport[i], i});
+            _BPTtc_i.push_back({pe->_index, 0, 0, pe->_inport[i], i});
         }
         // NOTE:默认将fifo_index加100，防止发生与pe的冲突
         else if (input_type == NodeType::fifo) {
-            pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value()) + 200;
-            _peBPTtc_i.push_back({pe->_index, pe->_inport[i], i});
+            pe->_intype[i] = 1;
+            pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value());
+            _BPTtc_i.push_back({pe->_index, 0, 1, pe->_inport[i], i});
         }
         input_xml = input_xml->NextSiblingElement("input");
     }
@@ -463,15 +485,16 @@ string process::lscfggen(XMLElement* PeXml, PEPROCESS* pe) {
         NodeType input_type = NodeTypeConverter::toEnum(input_xml->FindAttribute("type")->Value());
         if (input_type == NodeType::pe) {
             pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value());
-            _peBPTtc_i.push_back({pe->_index, pe->_inport[i], i});
+            _BPTtc_i.push_back({pe->_index, 0, 0, pe->_inport[i], i});
         }
         else if (input_type == NodeType::ls) {
             pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value()) + 100;
-            _peBPTtc_i.push_back({ pe->_index, pe->_inport[i], i });
+            _BPTtc_i.push_back({ pe->_index, 0, 0, pe->_inport[i], i });
         }
         else if (input_type == NodeType::fifo) {
-            pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value()) + 200;
-            _peBPTtc_i.push_back({ pe->_index, pe->_inport[i], i });
+            pe->_intype[i] = 1;
+            pe->_inport[i] = std::stoi(input_xml->FindAttribute("index")->Value());
+            _BPTtc_i.push_back({ pe->_index, 0, 1, pe->_inport[i], i });
         }
         input_xml = input_xml->NextSiblingElement("input");
     }
@@ -498,7 +521,34 @@ string process::lscfggen(XMLElement* PeXml, PEPROCESS* pe) {
     return pecfg;
 }
 
+void process::fifoparsing(XMLElement* FifoXml, FIFOPROCESS* fifo) {
+    fifo->_index = std::stoi(FifoXml->FindAttribute("index")->Value());
+    Fifocfggen(FifoXml, fifo);
+}
+
 void process::tempFifoProcess(XMLElement* PeXml, PEPROCESS* pe){
     pe->_index  = std::stoi(PeXml->FindAttribute("index")->Value()) + 200;
     pe->_config = lscfggen(PeXml, pe);
+}
+
+void process::Fifocfggen(XMLElement* FifoXml, FIFOPROCESS* fifo) {
+    XMLElement* input_xml = FifoXml->FirstChildElement("input");
+
+    for (int i = 1; (input_xml != nullptr && i < 3); ++i) {
+        NodeType input_type = NodeTypeConverter::toEnum(input_xml->FindAttribute("type")->Value());
+        if (input_type == NodeType::pe) {
+            fifo->_inport = std::stoi(input_xml->FindAttribute("index")->Value());
+            _BPTtc_i.push_back({ fifo->_index, 1, 0, fifo->_inport, i });
+        }
+        else if (input_type == NodeType::ls) {
+            fifo->_inport = std::stoi(input_xml->FindAttribute("index")->Value()) + 100;
+            _BPTtc_i.push_back({ fifo->_index, 1, 0, fifo->_inport, i });
+        }
+        else if (input_type == NodeType::fifo) {
+            fifo->intype = 1;
+            fifo->_inport = std::stoi(input_xml->FindAttribute("index")->Value());
+            _BPTtc_i.push_back({ fifo->_index, 1, 1, fifo->_inport, i });
+        }
+        input_xml = input_xml->NextSiblingElement("input");
+    }
 }
